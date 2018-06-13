@@ -1,8 +1,8 @@
 package letunov.samozdat.domain;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.hibernate.validator.constraints.Length;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 public class Book {
@@ -10,12 +10,28 @@ public class Book {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
 
+    @NotBlank(message = "Please fill the text")
+    @Length(max = 8192, message = "Message too long (more than 8kB)")
+    @Column(length = 8192)
     private String text;
-    private String name;
 
-    public Book(String text, String name) {
+    @NotBlank(message = "Please fill the text")
+    @Length(max = 255, message = "Message too long (more than 255)")
+    @Column(length = 255)
+    private String description;
+
+    private String title;
+
+    private String fileName;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User author;
+
+    public Book(String text, String description,String title) {
         this.text = text;
-        this.name = name;
+        this.description = description;
+        this.title = title;
     }
 
     public Book() {
@@ -30,6 +46,39 @@ public class Book {
         return text;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -38,13 +87,6 @@ public class Book {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
 
 }

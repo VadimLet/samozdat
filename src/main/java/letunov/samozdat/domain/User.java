@@ -4,6 +4,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Set;
 
@@ -13,9 +15,22 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @NotBlank(message = "Username cannot be empty")
     private String username;
+
+    @NotBlank(message = "email cannot be empty")
+    @Email(message = "Email is not correct")
     private String email;
+
+    @NotBlank(message = "Password cannot be empty")
     private String password;
+
+    private String activationCode;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Book> book;
+
     private boolean active;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -55,6 +70,13 @@ public class User implements UserDetails {
         return isActive();
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities()
+    {
+        return getRoles();
+    }
+
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -92,11 +114,24 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities()
-    {
-        return getRoles();
+
+    public String getActivationCode() {
+        return activationCode;
     }
 
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
+    }
 
+    public Set<Book> getBook() {
+        return book;
+    }
+
+    public void setBook(Set<Book> book) {
+        this.book = book;
+    }
+
+    public boolean isAdmin() {
+        return true;
+    }
 }

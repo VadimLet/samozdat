@@ -7,8 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-public class UserService implements UserDetailsService {
+@Service
+public class UserService implements UserDetailsService{
     @Autowired
     private UserRepo userRepo;
 
@@ -16,16 +18,18 @@ public class UserService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return null;
+        return userRepo.findByUsername(s);
     }
 
     public boolean add(User user) {
-        if (userRepo.findByUsername(user.getUsername()) != null) {
+        if (userRepo.findByUsername(user.getEmail()) != null) {
             return false;
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActive(true);
+
+        userRepo.save(user);
         return true;
     }
 }
