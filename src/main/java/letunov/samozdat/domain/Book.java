@@ -3,6 +3,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Entity
 public class Book {
@@ -26,6 +27,10 @@ public class Book {
     private String title;
 
     private String fileName;
+
+
+    @ManyToMany(mappedBy = "favourite", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<User> subscriptions;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -90,6 +95,11 @@ public class Book {
         this.id = id;
     }
 
+    public Set<User> getSubscriptions() {
+        return subscriptions;
+    }
 
-
+    public void setSubscriptions(Set<User> subscriptions) {
+        this.subscriptions = subscriptions;
+    }
 }

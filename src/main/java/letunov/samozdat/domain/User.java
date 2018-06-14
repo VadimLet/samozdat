@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Set;
 
 @Entity
-@Table(name = "usr")
+@Table(name = "user")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,8 +28,18 @@ public class User implements UserDetails {
 
     private String activationCode;
 
+    private String token;
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Book> book;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "book_favourite",
+            joinColumns = {
+                    @JoinColumn(name = "user_id")},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "book_id")})
+    private Set<Book> favourite;
 
     private boolean active;
 
@@ -37,6 +47,15 @@ public class User implements UserDetails {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
+
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public Long getId() {
         return id;
@@ -71,8 +90,7 @@ public class User implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities()
-    {
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
     }
 
@@ -133,5 +151,13 @@ public class User implements UserDetails {
 
     public boolean isAdmin() {
         return true;
+    }
+
+    public Set<Book> getFavourite() {
+        return favourite;
+    }
+
+    public void setFavourite(Set<Book> favourite) {
+        this.favourite = favourite;
     }
 }

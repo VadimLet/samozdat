@@ -4,6 +4,7 @@ import letunov.samozdat.domain.Book;
 import letunov.samozdat.domain.User;
 import letunov.samozdat.helpers.FileHelpers;
 import letunov.samozdat.repos.BookRepo;
+import letunov.samozdat.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,8 @@ import java.util.Map;
 
 @Controller
 public class BookController {
+    @Autowired
+    private UserRepo userRepo;
     @Autowired
     private BookRepo bookRepo;
 
@@ -91,4 +94,17 @@ public class BookController {
 
         return "main";
     }
+
+    @GetMapping("addfavourite/{book}")
+    public String addToFavourite(@AuthenticationPrincipal User user, @PathVariable Book book) {
+        User userCurrent = userRepo.findById(user.getId()).get();
+        if (!userCurrent.getFavourite().contains(book)) {
+            book.getSubscriptions().add(userCurrent);
+            userCurrent.getFavourite().add(book);
+            userRepo.save(userCurrent);
+        }
+        return "redirect:/main";
+    }
+
+
 }
