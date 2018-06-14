@@ -25,7 +25,7 @@ public class RegistrationController {
             return "login";
         } else {
             model.addAttribute("message", "Email уже занят");
-            return "registration";
+            return "redirect:/";
         }
     }
 }

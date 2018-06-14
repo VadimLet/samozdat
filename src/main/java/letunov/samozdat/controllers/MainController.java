@@ -2,6 +2,7 @@ package letunov.samozdat.controllers;
 
 import letunov.samozdat.domain.Book;
 import letunov.samozdat.domain.User;
+import letunov.samozdat.helpers.FileHelpers;
 import letunov.samozdat.repos.BookRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,50 +50,9 @@ public class MainController {
         return "main";
     }
 
-    @PostMapping("/main")
-    public String add(
-            @AuthenticationPrincipal User user,
-            @Valid Book book,
-            BindingResult bindingResult,
-            Model model,
-            @RequestParam("file") MultipartFile file
-    ) throws IOException {
-        book.setAuthor(user);
 
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errorsMap = ControllerUtils.getErrors(bindingResult);
 
-            model.mergeAttributes(errorsMap);
-            model.addAttribute("book", book);
-        } else {
-            saveFile(book, file);
-
-            model.addAttribute("book", null);
-
-            bookRepo.save(book);
-        }
-
-        Iterable<Book> books = bookRepo.findAll();
-
-        model.addAttribute("books", books);
-
-        return "main";
-    }
-
-    private void saveFile(@Valid Book book, @RequestParam("file") MultipartFile file) throws IOException {
-        if (file != null && !file.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(uploadPath);
-
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFilename = uuidFile + "." + file.getOriginalFilename();
-
-            file.transferTo(new File(uploadPath + "/" + resultFilename));
-
-            book.setFileName(resultFilename);
-        }
+    private void saveFile(@Valid Book book, MultipartFile file) throws IOException {
+        FileHelpers.saveFile(book, file, uploadPath);
     }
 }

@@ -7,11 +7,11 @@
                 <img src="/img/${book.fileName}" class="card-img-top">
             </#if>
             <div class="m-2">
-                <span>${book.text?html}</span><br/>
-                <i>#${book.description?html}</i>
+                <span><a href="/book/${book.id}"><h4>${book.title?html}</h4></a></span><br/>
+                <i>${book.description?html}</i>
             </div>
             <div class="card-footer text-muted">
-                <a><#if book.author??>${book.author.username?if_exists}</#if></a>
+                <a><#if book.author??>${book.author.username?html}</#if></a>
             </div>
         </div>
     <#else>
