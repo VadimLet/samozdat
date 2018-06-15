@@ -36,18 +36,23 @@ public class UserService implements UserDetailsService {
         user.setActive(true);
         String uuid = UUID.randomUUID().toString();
 
-        mailSender.send(user.getEmail(), "activate account", "click to activate http://localhost:8080/activate/" + uuid);
+        try {
+            mailSender.send(user.getEmail(), "activate account", "click to activate http://localhost:8080/activate/" + uuid);
+            user.setToken(uuid);
+        } catch (Exception e) {
+            System.err.println("mail error");
+        }
         userRepo.save(user);
         return true;
     }
 
     public boolean activateUser(String code) {
-        User user = userRepo.findByActivationCode(code);
-        if (user.getActivationCode() == null) {
+        User user = userRepo.findByToken(code);
+        if (user.getToken() == null) {
             return false;
         }
 
-        user.setActivationCode("null");
+        user.setToken("null");
         user.setActive(true);
         userRepo.save(user);
         return true;

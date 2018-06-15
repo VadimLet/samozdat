@@ -4,6 +4,7 @@ import letunov.samozdat.domain.Book;
 import letunov.samozdat.domain.User;
 import letunov.samozdat.helpers.FileHelpers;
 import letunov.samozdat.repos.BookRepo;
+import letunov.samozdat.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +25,9 @@ import java.util.UUID;
 @Controller
 public class MainController {
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private BookRepo bookRepo;
 
     @Value("${upload.path}")
@@ -35,7 +39,7 @@ public class MainController {
     }
 
     @GetMapping("/main")
-    public String main(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
+    public String main(@RequestParam(required = false, defaultValue = "") String filter, @RequestParam(required = false, defaultValue = "") String filterAuthor, Model model) {
         Iterable<Book> books;
 
         if (filter != null && !filter.isEmpty()) {
@@ -44,8 +48,18 @@ public class MainController {
             books = bookRepo.findAll();
         }
 
+        if (filterAuthor != null && !filterAuthor.isEmpty()) {
+            User userTemp = (User) userService.loadUserByUsername(filterAuthor);
+            if (userTemp!=null) {
+               books = bookRepo.findByAuthor(userTemp);
+            } else {
+                books = bookRepo.findAll();
+            }
+        }
+
         model.addAttribute("books", books);
         model.addAttribute("filter", filter);
+        model.addAttribute("filterAuthor", filterAuthor);
 
         return "main";
     }

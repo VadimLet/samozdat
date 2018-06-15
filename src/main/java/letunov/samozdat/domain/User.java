@@ -26,8 +26,6 @@ public class User implements UserDetails {
     @NotBlank(message = "Password cannot be empty")
     private String password;
 
-    private String activationCode;
-
     private String token;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -132,14 +130,6 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-
-    public String getActivationCode() {
-        return activationCode;
-    }
-
-    public void setActivationCode(String activationCode) {
-        this.activationCode = activationCode;
-    }
 
     public Set<Book> getBook() {
         return book;

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -21,6 +22,14 @@ public class ProfileController {
         model.addAttribute("myBooks", bookRepo.findByAuthor(user));
         model.addAttribute("favouriteBook", bookRepo.findBySubscriptions(user));
         return "profile";
+    }
+
+    @GetMapping("otherprofile/{user}")
+    public String getOtherProfile(@PathVariable User user, Model model) {
+        model.addAttribute("userView", user);
+        model.addAttribute("myBooks", bookRepo.findByAuthor(user));
+        model.addAttribute("favouriteBook", bookRepo.findBySubscriptions(user));
+        return "otherprofile";
     }
 
 }

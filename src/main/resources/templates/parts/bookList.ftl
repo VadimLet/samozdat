@@ -16,7 +16,7 @@
                 </#if>
             </div>
             <div class="card-footer text-muted">
-                <a><#if book.author??>${book.author.username?html}</#if></a>
+                <a href="/user/otherprofile/${book.author.id}"><#if book.author??>${book.author.username?html}</#if></a>
             </div>
         </div>
     <#else>
